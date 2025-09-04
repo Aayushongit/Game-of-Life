@@ -1,11 +1,11 @@
-import os, random, time
+import os, random, time, sys
 import pygame, pygame.image, pygame.key, pygame.draw, pygame.font
 from pygame.locals import *
 import cProfile
 
 generations_per_second = 3
 fade_time = 15.0
-size = width, height = 1280, 720
+size = width, height = 900, 600
 black = (0,0,0)
 blit_size = 1
 board_width = width
@@ -22,7 +22,8 @@ class Cell:
         self.future_state = alive
         self.time_since_death = fade_time
 
-    def apply_future(self, surf, (x, y)):
+    def apply_future(self, surf, pos):
+        x, y = pos
         if ( self.alive != self.future_state ) or ( not self.alive and self.time_since_death < fade_time ):
             self.alive = self.future_state
             self.draw(surf, x, y)
@@ -90,7 +91,7 @@ class Game:
 
             self.step()
             time_used = time.time() - start
-            print "%f s or %f FPS" % (time_used, 1/time_used)
+            print("%f s or %f FPS" % (time_used, 1/time_used))
 
     def set_cell(self, pos, state):
         if pos not in self.board:
@@ -137,13 +138,13 @@ class Game:
         
         self.screen.lock()
         
-        for pos, cell in self.board.iteritems():
+        for pos, cell in self.board.items():
             cell.apply_future(self.screen, pos)
 
         self.screen.unlock()
 
 
-        for pos, cell in self.board.iteritems():
+        for pos, cell in self.board.items():
             sum = 0
 
             neighbors = [ (pos[0]-1,pos[1]),
@@ -168,7 +169,6 @@ class Game:
         self.screen.blit( self.font.render("gen % 5d" % self.gen, True, (255, 0, 0), (0,0,0)) , (width-120, height-50) )
         pygame.display.flip()
 
-        pygame.image.save(self.screen, "life%05d.png" % self.gen)
         self.gen += 1
 
             
